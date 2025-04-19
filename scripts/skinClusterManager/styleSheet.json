@@ -1,0 +1,40 @@
+{
+    "QDialog": {
+      "border": "1px solid #5A5A5A",
+      "border-radius": "3px",
+      "background-color": "#2B2B2B"
+    },
+    "QWidget": {
+      "background-color": "#2B2B2B",
+      "color": "#E0E0E0",
+      "font-family": "Segoe UI, Tahoma, sans-serif",
+      "font-size": "12px"
+    },
+    "QPushButton": {
+      "background-color": "#444444",
+      "border": "1px solid #5A5A5A",
+      "padding": "4px 8px",
+      "border-radius": "4px",
+      "color": "#FFFFFF"
+    },
+    "QPushButton:hover": {
+      "background-color": "#5D9BD1"
+    },
+    "QListWidget": {
+      "background-color": "#3C3C3C",
+      "border": "1px solid #5A5A5A",
+      "color": "#FFFFFF"
+    },
+    "QListWidget::item:selected": {
+      "background-color": "#D67B7B",
+      "color": "#FFFFFF"
+    },
+    "QComboBox": {
+      "background-color": "#3C3C3C",
+      "border": "1px solid #5A5A5A",
+      "padding": "4px 6px",
+      "border-radius": "3px",
+      "color": "#FFFFFF"
+    }
+  }
+  
