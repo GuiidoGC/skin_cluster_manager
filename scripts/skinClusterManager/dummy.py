@@ -5,43 +5,6 @@ from PySide2 import QtWidgets, QtCore, QtGui
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 
-class MiddleDragListWidget(QtWidgets.QListWidget):
-    def __init__(self, parent=None):
-        super(MiddleDragListWidget, self).__init__(parent)
-        self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
-        self.setDefaultDropAction(QtCore.Qt.MoveAction)
-        self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-
-    def mousePressEvent(self, event):
-        if event.button() == QtCore.Qt.MiddleButton:
-            fake_event = QtGui.QMouseEvent(
-                QtCore.QEvent.MouseButtonPress,
-                event.localPos(),
-                event.screenPos(),
-                QtCore.Qt.LeftButton,
-                QtCore.Qt.LeftButton,
-                event.modifiers()
-            )
-            super(MiddleDragListWidget, self).mousePressEvent(fake_event)
-        else:
-            super(MiddleDragListWidget, self).mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        super(MiddleDragListWidget, self).mouseMoveEvent(event)
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == QtCore.Qt.MiddleButton:
-            fake_event = QtGui.QMouseEvent(
-                QtCore.QEvent.MouseButtonRelease,
-                event.localPos(),
-                event.screenPos(),
-                QtCore.Qt.LeftButton,
-                QtCore.Qt.LeftButton,
-                event.modifiers()
-            )
-            super(MiddleDragListWidget, self).mouseReleaseEvent(fake_event)
-        else:
-            super(MiddleDragListWidget, self).mouseReleaseEvent(event)
 
 class SkinClusterManager(QtWidgets.QDialog):
     def __init__(self):
@@ -60,34 +23,51 @@ class SkinClusterManager(QtWidgets.QDialog):
 
     def create_widgets(self):
         self.load_source_btn = QtWidgets.QPushButton("Load Source")
-        self.load_source_btn.toolTip = "Load source skin clusters"
-        self.source_list = MiddleDragListWidget()
+        self.source_list = QtWidgets.QTreeWidget()
+        self.source_list.setHeaderHidden(True)
+
+        # Create top-level items
+        spine_item = QtWidgets.QTreeWidgetItem(self.source_list, ["Spine"])
+        arm_item = QtWidgets.QTreeWidgetItem(self.source_list, ["Arm"])
+        face_item = QtWidgets.QTreeWidgetItem(self.source_list, ["Face"])
+        leg_item = QtWidgets.QTreeWidgetItem(self.source_list, ["Leg"])
+
+        # Add child items to "Arm"
+        hand_item = QtWidgets.QTreeWidgetItem(arm_item, ["Hand"])
+
+        # Expand all items by default
+        self.source_list.expandAll()
 
         self.right_btn = QtWidgets.QPushButton()
         arrow_icon = self.get_svg("arrow_forward")
         self.right_btn.setIcon(arrow_icon)
-        self.right_btn.toolTip = "Move selected source skin clusters to target"
         self.left_btn = QtWidgets.QPushButton()
         arrow_icon = self.get_svg("arrow_back")
         self.left_btn.setIcon(arrow_icon)
-        self.left_btn.toolTip = "Move selected target skin clusters to source"
 
 
         self.load_target_btn = QtWidgets.QPushButton("Load Target")
-        self.load_target_btn.toolTip = "Load target skin clusters"
-        self.target_list = MiddleDragListWidget()
+        self.target_list = QtWidgets.QTreeWidget()
 
         self.remove_skc = QtWidgets.QPushButton("Remove SkinCluster")
-        self.remove_skc.toolTip = "Remove selected skin clusters"
         self.new_mesh_radio = QtWidgets.QRadioButton()
-        self.new_mesh_radio.setText("New Mesh")
+        self.new_mesh_radio.setText("Shit Mesh")
         self.target_mesh_radio = QtWidgets.QRadioButton()
         self.target_mesh_radio.setText("Target Mesh")
         self.target_mesh_radio.setChecked(True)
         self.combine_skc = QtWidgets.QPushButton("Combine SkinCluster")
-        self.combine_skc.toolTip = "Combine target skin clusters" 
         self.rebuild_skc = QtWidgets.QPushButton("Rebuild SkinCluster")
-        self.rebuild_skc.toolTip = "Rebuild selected skin clusters"
+
+        # -- TOOLTIPS -- #
+        
+        self.load_source_btn.setToolTip = "Load source skin clusters"
+        self.right_btn.setToolTip = "Move selected source skin clusters to target"
+        self.left_btn.setToolTip = "Move selected target skin clusters to source"
+        self.load_target_btn.setToolTip = "Load target skin clusters"
+        self.remove_skc.setToolTip = "Remove selected skin clusters"
+        self.combine_skc.setToolTip = "Combine target skin clusters" 
+        self.rebuild_skc.setToolTip = "Rebuild selected skin clusters"
+
 
     def create_layout(self):
         left_top_v_layout = QtWidgets.QVBoxLayout() 

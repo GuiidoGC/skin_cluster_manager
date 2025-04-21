@@ -60,34 +60,34 @@ class SkinClusterManager(QtWidgets.QDialog):
 
     def create_widgets(self):
         self.load_source_btn = QtWidgets.QPushButton("Load Source")
-        self.load_source_btn.toolTip = "Load source skin clusters"
+        self.load_source_btn.setToolTip = "Load source skin clusters"
         self.source_list = MiddleDragListWidget()
 
         self.right_btn = QtWidgets.QPushButton()
         arrow_icon = self.get_svg("arrow_forward")
         self.right_btn.setIcon(arrow_icon)
-        self.right_btn.toolTip = "Move selected source skin clusters to target"
+        self.right_btn.setToolTip = "Move selected source skin clusters to target"
         self.left_btn = QtWidgets.QPushButton()
         arrow_icon = self.get_svg("arrow_back")
         self.left_btn.setIcon(arrow_icon)
-        self.left_btn.toolTip = "Move selected target skin clusters to source"
+        self.left_btn.setToolTip = "Move selected target skin clusters to source"
 
 
         self.load_target_btn = QtWidgets.QPushButton("Load Target")
-        self.load_target_btn.toolTip = "Load target skin clusters"
+        self.load_target_btn.setToolTip = "Load target skin clusters"
         self.target_list = MiddleDragListWidget()
 
         self.remove_skc = QtWidgets.QPushButton("Remove SkinCluster")
-        self.remove_skc.toolTip = "Remove selected skin clusters"
+        self.remove_skc.setToolTip = "Remove selected skin clusters"
         self.new_mesh_radio = QtWidgets.QRadioButton()
         self.new_mesh_radio.setText("New Mesh")
         self.target_mesh_radio = QtWidgets.QRadioButton()
         self.target_mesh_radio.setText("Target Mesh")
         self.target_mesh_radio.setChecked(True)
         self.combine_skc = QtWidgets.QPushButton("Combine SkinCluster")
-        self.combine_skc.toolTip = "Combine target skin clusters" 
+        self.combine_skc.setToolTip = "Combine target skin clusters" 
         self.rebuild_skc = QtWidgets.QPushButton("Rebuild SkinCluster")
-        self.rebuild_skc.toolTip = "Rebuild selected skin clusters"
+        self.rebuild_skc.setToolTip = "Rebuild selected skin clusters"
 
     def create_layout(self):
         left_top_v_layout = QtWidgets.QVBoxLayout() 
