@@ -68,6 +68,11 @@ class SkinClusterManager(QtWidgets.QDialog):
         self.help_button.setToolTip("Help")
         self.help_button.setObjectName("help_button")
 
+        self.div1 = QtWidgets.QFrame()
+        self.div1.setFrameShape(QtWidgets.QFrame.HLine)
+        self.div1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.div1.setObjectName("divider_line")
+
         self.load_source_btn = QtWidgets.QPushButton("Load Source")
         self.load_source_btn.setToolTip("Load source skin clusters")
         self.source_list = MiddleDragListWidget()
@@ -97,6 +102,17 @@ class SkinClusterManager(QtWidgets.QDialog):
         self.combine_skc.setToolTip("Combine target skin clusters")
         self.rebuild_skc = QtWidgets.QPushButton("Rebuild SkinCluster")
         self.rebuild_skc.setToolTip("Rebuild selected skin clusters")
+
+        self.div2 = QtWidgets.QFrame()
+        self.div2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.div2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.div2.setObjectName("divider_line")
+        self.div2.setStyleSheet("border-width: 1px;")
+
+        self.copyRight_text = QtWidgets.QLabel("Copyright© 2025 Guido Gonzalez. All rights reserved.")
+        self.version_text = QtWidgets.QLabel("Version 1.0.0")
+        
+        
 
     def create_layout(self):
         top_horizontal_layout_text = QtWidgets.QHBoxLayout()
@@ -130,12 +146,20 @@ class SkinClusterManager(QtWidgets.QDialog):
         bottom_horizontal_layout.addWidget(self.target_mesh_radio)
         bottom_horizontal_layout.addStretch()
         bottom_horizontal_layout.addWidget(self.combine_skc)
-        bottom_horizontal_layout.addWidget(self.rebuild_skc)    
+        bottom_horizontal_layout.addWidget(self.rebuild_skc) 
+
+        bottom_text_horizontal_layout = QtWidgets.QHBoxLayout()   
+        bottom_text_horizontal_layout.addWidget(self.copyRight_text)
+        bottom_text_horizontal_layout.addStretch()
+        bottom_text_horizontal_layout.addWidget(self.version_text)
         
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.addLayout(top_horizontal_layout_text)
+        main_layout.addWidget(self.div1)
         main_layout.addLayout(top_horizontal_layout)
         main_layout.addLayout(bottom_horizontal_layout)
+        main_layout.addWidget(self.div2)
+        main_layout.addLayout(bottom_text_horizontal_layout)    
 
     def create_connections(self):
         self.help_button.clicked.connect(self.open_help)

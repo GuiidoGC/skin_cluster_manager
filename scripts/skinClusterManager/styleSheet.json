@@ -93,5 +93,11 @@
   "color": "#777",
   "border": "none",
   "border-radius": "0px"
+},
+"#divider_line": {
+  "border": "none",
+  "background-color": "#212121",
+  "min-height": "1px",
+  "max-height": "1px"
 }
 }
