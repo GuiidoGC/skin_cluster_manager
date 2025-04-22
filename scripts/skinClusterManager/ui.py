@@ -47,7 +47,7 @@ class SkinClusterManager(QtWidgets.QDialog):
     def __init__(self):
         super(SkinClusterManager, self).__init__(wrapInstance(int(omui.MQtUtil.mainWindow()), QtWidgets.QMainWindow))
         self.setWindowTitle("SkinCluster Manager")
-        self.setMinimumSize(300, 400)
+        self.setMinimumSize(700, 400)
 
         self.json_path = os.path.join(os.path.dirname(__file__), "styleSheet.json")
 
@@ -59,37 +59,51 @@ class SkinClusterManager(QtWidgets.QDialog):
         self.apply_stylesheet()
 
     def create_widgets(self):
+
+        self.skincluster_text = QtWidgets.QLabel("SkinCluster Manager") 
+        self.skincluster_text.setObjectName("skincluster_text")    
+        self.help_button = QtWidgets.QPushButton()
+        help_button_logo = self.get_svg("help_button")
+        self.help_button.setIcon(help_button_logo)
+        self.help_button.setToolTip("Help")
+        self.help_button.setObjectName("help_button")
+
         self.load_source_btn = QtWidgets.QPushButton("Load Source")
-        self.load_source_btn.setToolTip = "Load source skin clusters"
+        self.load_source_btn.setToolTip("Load source skin clusters")
         self.source_list = MiddleDragListWidget()
 
         self.right_btn = QtWidgets.QPushButton()
         arrow_icon = self.get_svg("arrow_forward")
         self.right_btn.setIcon(arrow_icon)
-        self.right_btn.setToolTip = "Move selected source skin clusters to target"
+        self.right_btn.setToolTip("Move selected source skin clusters to target")
         self.left_btn = QtWidgets.QPushButton()
         arrow_icon = self.get_svg("arrow_back")
         self.left_btn.setIcon(arrow_icon)
-        self.left_btn.setToolTip = "Move selected target skin clusters to source"
+        self.left_btn.setToolTip("Move selected target skin clusters to source")
 
 
         self.load_target_btn = QtWidgets.QPushButton("Load Target")
-        self.load_target_btn.setToolTip = "Load target skin clusters"
+        self.load_target_btn.setToolTip("Load target skin clusters")
         self.target_list = MiddleDragListWidget()
 
         self.remove_skc = QtWidgets.QPushButton("Remove SkinCluster")
-        self.remove_skc.setToolTip = "Remove selected skin clusters"
+        self.remove_skc.setToolTip("Remove selected skin clusters")
         self.new_mesh_radio = QtWidgets.QRadioButton()
         self.new_mesh_radio.setText("New Mesh")
         self.target_mesh_radio = QtWidgets.QRadioButton()
         self.target_mesh_radio.setText("Target Mesh")
         self.target_mesh_radio.setChecked(True)
         self.combine_skc = QtWidgets.QPushButton("Combine SkinCluster")
-        self.combine_skc.setToolTip = "Combine target skin clusters" 
+        self.combine_skc.setToolTip("Combine target skin clusters")
         self.rebuild_skc = QtWidgets.QPushButton("Rebuild SkinCluster")
-        self.rebuild_skc.setToolTip = "Rebuild selected skin clusters"
+        self.rebuild_skc.setToolTip("Rebuild selected skin clusters")
 
     def create_layout(self):
+        top_horizontal_layout_text = QtWidgets.QHBoxLayout()
+        top_horizontal_layout_text.addWidget(self.skincluster_text)
+        top_horizontal_layout_text.addStretch()
+        top_horizontal_layout_text.addWidget(self.help_button)
+
         left_top_v_layout = QtWidgets.QVBoxLayout() 
         left_top_v_layout.addWidget(self.load_source_btn)   
         left_top_v_layout.addWidget(self.source_list)   
@@ -119,10 +133,12 @@ class SkinClusterManager(QtWidgets.QDialog):
         bottom_horizontal_layout.addWidget(self.rebuild_skc)    
         
         main_layout = QtWidgets.QVBoxLayout(self)
+        main_layout.addLayout(top_horizontal_layout_text)
         main_layout.addLayout(top_horizontal_layout)
         main_layout.addLayout(bottom_horizontal_layout)
 
     def create_connections(self):
+        self.help_button.clicked.connect(self.open_help)
         self.load_source_btn.clicked.connect(self.load_source_skin_clusters) 
         self.load_target_btn.clicked.connect(self.load_target_skin_clusters)
         self.remove_skc.clicked.connect(self.remove_selected_skin_cluster)
@@ -151,6 +167,10 @@ class SkinClusterManager(QtWidgets.QDialog):
         except Exception as e:
             print(f"Failed to load SVG: {e}")
             return QtGui.QIcon()
+
+    def open_help(self):
+        url = "https://github.com/GuiidoGC/skin_cluster_manager"
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
 
     def load_source_skin_clusters(self):
         count = self.source_list.count()
