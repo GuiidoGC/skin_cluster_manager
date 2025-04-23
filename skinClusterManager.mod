@@ -1,1 +1,1 @@
-+ SkinClusterManager 1.0 D:\git\maya\skin_cluster_manager
++ SkinClusterManager 1.0 H:\2024-25\git\skin_cluster_manager

@@ -1,9 +1,32 @@
 import json
 import os
-
 from PySide2 import QtWidgets, QtCore, QtGui
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
+
+class CompoundList(QtWidgets.QFrame):
+    def __init__(self, name = "Test", tooltip = "Test"):
+        super().__init__()
+        self.populate(name = name, tooltip = tooltip)
+        self.create_layout()
+
+    def populate(self, name, tooltip):
+        self.load_source_btn = QtWidgets.QPushButton(name)
+        self.load_source_btn.setToolTip(tooltip)
+        self.source_list = MiddleDragListWidget()
+    
+    def create_layout(self):
+        left_top_v_layout = QtWidgets.QVBoxLayout() 
+        left_top_v_layout.addWidget(self.load_source_btn)   
+        left_top_v_layout.addWidget(self.source_list)   
+
+
+
+
+    
+
+    
+
 
 class MiddleDragListWidget(QtWidgets.QListWidget):
     def __init__(self, parent=None):
@@ -23,8 +46,10 @@ class MiddleDragListWidget(QtWidgets.QListWidget):
                 event.modifiers()
             )
             super(MiddleDragListWidget, self).mousePressEvent(fake_event)
-        else:
-            super(MiddleDragListWidget, self).mousePressEvent(event)
+
+        elif event.button() == QtCore.Qt.LeftButton:
+            return
+            
 
     def mouseMoveEvent(self, event):
         super(MiddleDragListWidget, self).mouseMoveEvent(event)
@@ -64,7 +89,9 @@ class SkinClusterManager(QtWidgets.QDialog):
         self.skincluster_text.setObjectName("skincluster_text")    
         self.help_button = QtWidgets.QPushButton()
         help_button_logo = self.get_svg("help_button")
-        self.help_button.setIcon(help_button_logo)
+
+        self.help_button.setIcon(QtGui.QPixmap(":help.png"))
+        self.help_button.setIconSize(QtCore.QSize(20, 20))
         self.help_button.setToolTip("Help")
         self.help_button.setObjectName("help_button")
 
@@ -73,9 +100,12 @@ class SkinClusterManager(QtWidgets.QDialog):
         self.div1.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.div1.setObjectName("divider_line")
 
-        self.load_source_btn = QtWidgets.QPushButton("Load Source")
-        self.load_source_btn.setToolTip("Load source skin clusters")
-        self.source_list = MiddleDragListWidget()
+        # self.load_source_btn = QtWidgets.QPushButton("Load Source")
+        # self.load_source_btn.setToolTip("Load source skin clusters")
+        # self.source_list = MiddleDragListWidget()
+
+        self.load_source = CompoundList(name = "Load Source", tooltip = "Load source skin clusters")
+        
 
         self.right_btn = QtWidgets.QPushButton()
         arrow_icon = self.get_svg("arrow_forward")
@@ -87,9 +117,12 @@ class SkinClusterManager(QtWidgets.QDialog):
         self.left_btn.setToolTip("Move selected target skin clusters to source")
 
 
-        self.load_target_btn = QtWidgets.QPushButton("Load Target")
-        self.load_target_btn.setToolTip("Load target skin clusters")
-        self.target_list = MiddleDragListWidget()
+        # self.load_target_btn = QtWidgets.QPushButton("Load Target")
+        # self.load_target_btn.setToolTip("Load target skin clusters")
+        # self.target_list = MiddleDragListWidget()
+
+        self.target_source = CompoundList(name = "Load Target", tooltip = "Load target skin clusters")
+
 
         self.remove_skc = QtWidgets.QPushButton("Remove SkinCluster")
         self.remove_skc.setToolTip("Remove selected skin clusters")
@@ -120,9 +153,9 @@ class SkinClusterManager(QtWidgets.QDialog):
         top_horizontal_layout_text.addStretch()
         top_horizontal_layout_text.addWidget(self.help_button)
 
-        left_top_v_layout = QtWidgets.QVBoxLayout() 
-        left_top_v_layout.addWidget(self.load_source_btn)   
-        left_top_v_layout.addWidget(self.source_list)   
+        # left_top_v_layout = QtWidgets.QVBoxLayout() 
+        # left_top_v_layout.addWidget(self.load_source_btn)   
+        # left_top_v_layout.addWidget(self.source_list)   
 
         middle_top_v_layout = QtWidgets.QVBoxLayout()
         middle_top_v_layout.addStretch()
@@ -130,14 +163,16 @@ class SkinClusterManager(QtWidgets.QDialog):
         middle_top_v_layout.addWidget(self.left_btn)    
         middle_top_v_layout.addStretch()
 
-        right_top_v_layout = QtWidgets.QVBoxLayout()
-        right_top_v_layout.addWidget(self.load_target_btn)
-        right_top_v_layout.addWidget(self.target_list)
+        # right_top_v_layout = QtWidgets.QVBoxLayout()
+        # right_top_v_layout.addWidget(self.load_target_btn)
+        # right_top_v_layout.addWidget(self.target_list)
 
         top_horizontal_layout = QtWidgets.QHBoxLayout()
-        top_horizontal_layout.addLayout(left_top_v_layout)
-        top_horizontal_layout.addLayout(middle_top_v_layout)    
-        top_horizontal_layout.addLayout(right_top_v_layout)
+        # top_horizontal_layout.addLayout(left_top_v_layout)
+        top_horizontal_layout.addWidget(self.load_source)
+        top_horizontal_layout.addLayout(middle_top_v_layout)
+        top_horizontal_layout.addWidget(self.target_source)    
+        # top_horizontal_layout.addLayout(right_top_v_layout)
 
         bottom_horizontal_layout = QtWidgets.QHBoxLayout()
         bottom_horizontal_layout.addWidget(self.remove_skc)
@@ -163,8 +198,8 @@ class SkinClusterManager(QtWidgets.QDialog):
 
     def create_connections(self):
         self.help_button.clicked.connect(self.open_help)
-        self.load_source_btn.clicked.connect(self.load_source_skin_clusters) 
-        self.load_target_btn.clicked.connect(self.load_target_skin_clusters)
+        # self.load_source_btn.clicked.connect(self.load_source_skin_clusters) 
+        # self.load_target_btn.clicked.connect(self.load_target_skin_clusters)
         self.remove_skc.clicked.connect(self.remove_selected_skin_cluster)
         self.right_btn.clicked.connect(self.move_source_to_target)  
         self.left_btn.clicked.connect(self.move_target_to_source)
@@ -281,12 +316,5 @@ class SkinClusterManager(QtWidgets.QDialog):
             return None
 
 
-def show_skin_cluster_manager():
 
-    try:
-        ui.close()
-    except:
-        pass
 
-    ui = SkinClusterManager()
-    ui.show()

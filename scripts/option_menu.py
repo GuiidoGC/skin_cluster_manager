@@ -10,9 +10,8 @@ def reload_ui(*args):
     option_menu.option_menu_ui()
 
 def call_skinCluster(*args):
-    from skinClusterManager import ui
-    reload(ui)
-    ui.show_skin_cluster_manager()
+    import skinClusterManager 
+    reload(skinClusterManager)
 
 def option_menu_ui():
 
