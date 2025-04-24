@@ -16,17 +16,9 @@ class CompoundList(QtWidgets.QFrame):
         self.source_list = MiddleDragListWidget()
     
     def create_layout(self):
-        left_top_v_layout = QtWidgets.QVBoxLayout() 
+        left_top_v_layout = QtWidgets.QVBoxLayout(self) 
         left_top_v_layout.addWidget(self.load_source_btn)   
         left_top_v_layout.addWidget(self.source_list)   
-
-
-
-
-    
-
-    
-
 
 class MiddleDragListWidget(QtWidgets.QListWidget):
     def __init__(self, parent=None):
@@ -48,11 +40,13 @@ class MiddleDragListWidget(QtWidgets.QListWidget):
             super(MiddleDragListWidget, self).mousePressEvent(fake_event)
 
         elif event.button() == QtCore.Qt.LeftButton:
+            super(MiddleDragListWidget, self).mousePressEvent(event)
             return
             
 
     def mouseMoveEvent(self, event):
         super(MiddleDragListWidget, self).mouseMoveEvent(event)
+
 
     def mouseReleaseEvent(self, event):
         if event.button() == QtCore.Qt.MiddleButton:
@@ -100,13 +94,8 @@ class SkinClusterManager(QtWidgets.QDialog):
         self.div1.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.div1.setObjectName("divider_line")
 
-        # self.load_source_btn = QtWidgets.QPushButton("Load Source")
-        # self.load_source_btn.setToolTip("Load source skin clusters")
-        # self.source_list = MiddleDragListWidget()
-
         self.load_source = CompoundList(name = "Load Source", tooltip = "Load source skin clusters")
         
-
         self.right_btn = QtWidgets.QPushButton()
         arrow_icon = self.get_svg("arrow_forward")
         self.right_btn.setIcon(arrow_icon)
@@ -116,13 +105,7 @@ class SkinClusterManager(QtWidgets.QDialog):
         self.left_btn.setIcon(arrow_icon)
         self.left_btn.setToolTip("Move selected target skin clusters to source")
 
-
-        # self.load_target_btn = QtWidgets.QPushButton("Load Target")
-        # self.load_target_btn.setToolTip("Load target skin clusters")
-        # self.target_list = MiddleDragListWidget()
-
         self.target_source = CompoundList(name = "Load Target", tooltip = "Load target skin clusters")
-
 
         self.remove_skc = QtWidgets.QPushButton("Remove SkinCluster")
         self.remove_skc.setToolTip("Remove selected skin clusters")
@@ -153,26 +136,16 @@ class SkinClusterManager(QtWidgets.QDialog):
         top_horizontal_layout_text.addStretch()
         top_horizontal_layout_text.addWidget(self.help_button)
 
-        # left_top_v_layout = QtWidgets.QVBoxLayout() 
-        # left_top_v_layout.addWidget(self.load_source_btn)   
-        # left_top_v_layout.addWidget(self.source_list)   
-
         middle_top_v_layout = QtWidgets.QVBoxLayout()
         middle_top_v_layout.addStretch()
         middle_top_v_layout.addWidget(self.right_btn)
         middle_top_v_layout.addWidget(self.left_btn)    
         middle_top_v_layout.addStretch()
 
-        # right_top_v_layout = QtWidgets.QVBoxLayout()
-        # right_top_v_layout.addWidget(self.load_target_btn)
-        # right_top_v_layout.addWidget(self.target_list)
-
         top_horizontal_layout = QtWidgets.QHBoxLayout()
-        # top_horizontal_layout.addLayout(left_top_v_layout)
         top_horizontal_layout.addWidget(self.load_source)
         top_horizontal_layout.addLayout(middle_top_v_layout)
         top_horizontal_layout.addWidget(self.target_source)    
-        # top_horizontal_layout.addLayout(right_top_v_layout)
 
         bottom_horizontal_layout = QtWidgets.QHBoxLayout()
         bottom_horizontal_layout.addWidget(self.remove_skc)
@@ -198,8 +171,8 @@ class SkinClusterManager(QtWidgets.QDialog):
 
     def create_connections(self):
         self.help_button.clicked.connect(self.open_help)
-        # self.load_source_btn.clicked.connect(self.load_source_skin_clusters) 
-        # self.load_target_btn.clicked.connect(self.load_target_skin_clusters)
+        self.load_source.load_source_btn.clicked.connect(self.load_source_skin_clusters) 
+        self.target_source.load_source_btn.clicked.connect(self.load_target_skin_clusters)
         self.remove_skc.clicked.connect(self.remove_selected_skin_cluster)
         self.right_btn.clicked.connect(self.move_source_to_target)  
         self.left_btn.clicked.connect(self.move_target_to_source)
@@ -232,58 +205,59 @@ class SkinClusterManager(QtWidgets.QDialog):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
 
     def load_source_skin_clusters(self):
-        count = self.source_list.count()
-        self.source_list.addItem(f"New Source SkinCluster {count + 1}")
+        count = self.load_source.source_list.count()
+        self.load_source.source_list.addItem(f"New Target SkinCluster {count + 1}")
 
     def load_target_skin_clusters(self):
-        count = self.target_list.count()
-        self.target_list.addItem(f"New Target SkinCluster {count + 1}")
+        count = self.target_source.source_list.count()
+        self.target_source.source_list.addItem(f"New Target SkinCluster {count + 1}")
 
     def remove_selected_skin_cluster(self):
-        source_selected_items = self.source_list.selectedItems()
-        target_selected_items = self.target_list.selectedItems()
+        source_selected_items = self.load_source.source_list.selectedItems()
+        target_selected_items = self.target_source.source_list.selectedItems()
         if source_selected_items:
             for item in source_selected_items:
-                row = self.source_list.row(item)
-                self.source_list.takeItem(row)
+                row = self.load_source.source_list.row(item)
+                self.load_source.source_list.takeItem(row)
         if target_selected_items:
             for item in target_selected_items:
-                row = self.target_list.row(item)
-                self.target_list.takeItem(row)
+                row = self.target_source.source_list.row(item)
+                self.target_source.source_list.takeItem(row)
         if not source_selected_items and not target_selected_items: 
             print("No skin clusters selected.")
 
     def move_source_to_target(self):    
-        source_selected_items = self.source_list.selectedItems()
+        source_selected_items = self.load_source.source_list.selectedItems()
         if source_selected_items:
             for item in source_selected_items:
-                row = self.source_list.row(item)
-                target_item = self.source_list.takeItem(row)
-                self.target_list.addItem(target_item)
+                row = self.load_source.source_list.row(item)
+                target_item = self.load_source.source_list.takeItem(row)
+                self.target_source.source_list.addItem(target_item)
         else:
             print("No source skin clusters selected.")
 
     def move_target_to_source(self):    
-        target_selected_items = self.target_list.selectedItems()
+        target_selected_items = self.target_source.source_list.selectedItems()
         if target_selected_items:
             for item in target_selected_items:
-                row = self.target_list.row(item)
-                source_item = self.target_list.takeItem(row)
-                self.source_list.addItem(source_item)
+                row = self.target_source.source_list.row(item)
+                source_item = self.target_source.source_list.takeItem(row)
+                self.load_source.source_list.addItem(source_item)
         else:
             print("No target skin clusters selected.")
 
     def combine_skin_cluster(self):
-        target_items = [self.target_list.item(i).text() for i in range(self.target_list.count())]
+        target_items = [self.target_source.source_list.item(i).text() for i in range(self.target_source.source_list.count())]
         selected_radio = "New Mesh" if self.new_mesh_radio.isChecked() else "Target Mesh"
         if target_items:
             print(f"Combined on {selected_radio}:", target_items)
         else:
             print("No target skin clusters.")
 
+
     def rebuild_skin_cluster(self): 
-        source_selected_items = [self.source_list.item(i).text() for i in range(self.source_list.count())]
-        target_selected_items = [self.target_list.item(i).text() for i in range(self.target_list.count())]
+        source_selected_items = [self.load_source.source_list.item(i).text() for i in range(self.load_source.source_list.count())]
+        target_selected_items = [self.target_source.source_list.item(i).text() for i in range(self.target_source.source_list.count())]
         selected_radio = "New Mesh" if self.new_mesh_radio.isChecked() else "Target Mesh"
         if source_selected_items or target_selected_items:
             print(f"Rebuilt on {selected_radio}:", source_selected_items + target_selected_items)
