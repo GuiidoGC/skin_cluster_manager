@@ -5,15 +5,24 @@ from functools import partial
 from importlib import reload
 
 def reload_ui(*args):
+    """
+    Reload the UI and all the modules in the current directory.
+    """
     import option_menu
     reload(option_menu)
     option_menu.option_menu_ui()
 
 def call_skinCluster(*args):
+    """
+    Call the skinClusterManager module and execute its main function.
+    """
     import skinClusterManager 
     reload(skinClusterManager)
 
 def option_menu_ui():
+    """
+    Create the option menu UI in Maya.
+    """
 
     if cmds.menu("ToolKit", exists=True):
         cmds.deleteUI("ToolKit")

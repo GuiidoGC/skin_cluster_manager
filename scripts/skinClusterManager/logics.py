@@ -2,6 +2,12 @@ import maya.cmds as cmds
 import maya.api.OpenMaya as om2
 
 
+
+"""
+Still Workin in progress
+"""
+
+
 def check_skincluster_existance():
     sel = cmds.ls(sl=True)
     relatives = cmds.listRelatives(sel, ad=True, shapes=True)

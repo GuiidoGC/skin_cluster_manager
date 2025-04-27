@@ -5,29 +5,63 @@ from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 
 class CompoundList(QtWidgets.QFrame):
+    """
+    Compound widget with a button and a list widget.
+    """
+
     def __init__(self, name = "Test", tooltip = "Test"):
+        """
+        Initialize the CompoundList widget.
+        Args:
+            name (str): The name of the button.
+            tooltip (str): The tooltip for the button.
+        """
+
         super().__init__()
         self.populate(name = name, tooltip = tooltip)
         self.create_layout()
 
     def populate(self, name, tooltip):
+        """
+        Populate the widget with a button and a list widget.
+        Args:
+            name (str): The name of the button.
+            tooltip (str): The tooltip for the button.
+        """
+
         self.load_source_btn = QtWidgets.QPushButton(name)
         self.load_source_btn.setToolTip(tooltip)
         self.source_list = MiddleDragListWidget()
     
     def create_layout(self):
+        """
+        Create the layout for the widget.
+        """
+
         left_top_v_layout = QtWidgets.QVBoxLayout(self) 
         left_top_v_layout.addWidget(self.load_source_btn)   
         left_top_v_layout.addWidget(self.source_list)   
 
 class MiddleDragListWidget(QtWidgets.QListWidget):
+    """
+    Custom QListWidget that allows dragging items with the middle mouse button.
+    """
+
     def __init__(self, parent=None):
+        """
+        Initialize the MiddleDragListWidget.
+        Args:
+            parent (QWidget): The parent widget.
+        """
         super(MiddleDragListWidget, self).__init__(parent)
         self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
         self.setDefaultDropAction(QtCore.Qt.MoveAction)
         self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
 
     def mousePressEvent(self, event):
+        """
+        Handle mouse press events.  
+        """
         if event.button() == QtCore.Qt.MiddleButton:
             fake_event = QtGui.QMouseEvent(
                 QtCore.QEvent.MouseButtonPress,
@@ -45,10 +79,16 @@ class MiddleDragListWidget(QtWidgets.QListWidget):
             
 
     def mouseMoveEvent(self, event):
+        """
+        Handle mouse move events.   
+        """
         super(MiddleDragListWidget, self).mouseMoveEvent(event)
 
 
     def mouseReleaseEvent(self, event):
+        """ 
+        Handle mouse release events.    
+        """
         if event.button() == QtCore.Qt.MiddleButton:
             fake_event = QtGui.QMouseEvent(
                 QtCore.QEvent.MouseButtonRelease,
@@ -63,11 +103,21 @@ class MiddleDragListWidget(QtWidgets.QListWidget):
             super(MiddleDragListWidget, self).mouseReleaseEvent(event)
 
 class SkinClusterManager(QtWidgets.QDialog):
+    """
+    SkinCluster Manager UI class.
+    This class creates a UI for managing skin clusters in Maya.
+    It allows users to load, remove, and combine skin clusters.
+    """
+
     def __init__(self):
+        """
+        Initialize the SkinClusterManager UI.
+        """ 
         super(SkinClusterManager, self).__init__(wrapInstance(int(omui.MQtUtil.mainWindow()), QtWidgets.QMainWindow))
         self.setWindowTitle("SkinCluster Manager")
         self.setMinimumSize(700, 400)
 
+        # Get the path to the current script directory only works if .mod is set correctly
         self.json_path = os.path.join(os.path.dirname(__file__), "styleSheet.json")
 
         self.svg_path = os.path.join(os.path.dirname(__file__), "images.json")
@@ -78,6 +128,9 @@ class SkinClusterManager(QtWidgets.QDialog):
         self.apply_stylesheet()
 
     def create_widgets(self):
+        """ 
+        Create the widgets for the UI.
+        """  
 
         self.skincluster_text = QtWidgets.QLabel("SkinCluster Manager") 
         self.skincluster_text.setObjectName("skincluster_text")    
@@ -131,6 +184,10 @@ class SkinClusterManager(QtWidgets.QDialog):
         
 
     def create_layout(self):
+        """
+        Create the layout for the UI.
+        """
+
         top_horizontal_layout_text = QtWidgets.QHBoxLayout()
         top_horizontal_layout_text.addWidget(self.skincluster_text)
         top_horizontal_layout_text.addStretch()
@@ -170,6 +227,9 @@ class SkinClusterManager(QtWidgets.QDialog):
         main_layout.addLayout(bottom_text_horizontal_layout)    
 
     def create_connections(self):
+        """
+        Create the connections for the UI.
+        """
         self.help_button.clicked.connect(self.open_help)
         self.load_source.load_source_btn.clicked.connect(self.load_source_skin_clusters) 
         self.target_source.load_source_btn.clicked.connect(self.load_target_skin_clusters)
@@ -180,6 +240,14 @@ class SkinClusterManager(QtWidgets.QDialog):
         self.rebuild_skc.clicked.connect(self.rebuild_skin_cluster)
 
     def get_svg(self, name=None):
+        """
+        Load SVG icon from the specified path.
+        Args:
+            name (str): The name of the SVG icon to load.
+        Returns:    
+            QIcon: The loaded SVG icon.
+        """
+
         if not os.path.exists(self.svg_path):
             print(f"SVG path not found: {self.svg_path}")
             return QtGui.QIcon()
@@ -201,18 +269,30 @@ class SkinClusterManager(QtWidgets.QDialog):
             return QtGui.QIcon()
 
     def open_help(self):
+        """
+        Open the help documentation in the default web browser. 
+        """
         url = "https://github.com/GuiidoGC/skin_cluster_manager"
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
 
     def load_source_skin_clusters(self):
+        """
+        Load source skin clusters into the list widget.
+        """
         count = self.load_source.source_list.count()
-        self.load_source.source_list.addItem(f"New Target SkinCluster {count + 1}")
+        self.load_source.source_list.addItem(f"New Source SkinCluster {count + 1}")
 
     def load_target_skin_clusters(self):
+        """
+        Load target skin clusters into the list widget.
+        """
         count = self.target_source.source_list.count()
         self.target_source.source_list.addItem(f"New Target SkinCluster {count + 1}")
 
     def remove_selected_skin_cluster(self):
+        """
+        Remove selected skin clusters from the list widget.
+        """
         source_selected_items = self.load_source.source_list.selectedItems()
         target_selected_items = self.target_source.source_list.selectedItems()
         if source_selected_items:
@@ -227,6 +307,9 @@ class SkinClusterManager(QtWidgets.QDialog):
             print("No skin clusters selected.")
 
     def move_source_to_target(self):    
+        """
+        Move selected source skin clusters to the target list widget.       
+        """ 
         source_selected_items = self.load_source.source_list.selectedItems()
         if source_selected_items:
             for item in source_selected_items:
@@ -236,7 +319,10 @@ class SkinClusterManager(QtWidgets.QDialog):
         else:
             print("No source skin clusters selected.")
 
-    def move_target_to_source(self):    
+    def move_target_to_source(self):   
+        """
+        Move selected target skin clusters to the source list widget.
+        """ 
         target_selected_items = self.target_source.source_list.selectedItems()
         if target_selected_items:
             for item in target_selected_items:
@@ -247,6 +333,9 @@ class SkinClusterManager(QtWidgets.QDialog):
             print("No target skin clusters selected.")
 
     def combine_skin_cluster(self):
+        """
+        Combine selected skin clusters from the target list widget.
+        """ 
         target_items = [self.target_source.source_list.item(i).text() for i in range(self.target_source.source_list.count())]
         selected_radio = "New Mesh" if self.new_mesh_radio.isChecked() else "Target Mesh"
         if target_items:
@@ -256,6 +345,10 @@ class SkinClusterManager(QtWidgets.QDialog):
 
 
     def rebuild_skin_cluster(self): 
+        """ 
+        Rebuild selected skin clusters from the source and target list widgets.
+        """
+
         source_selected_items = [self.load_source.source_list.item(i).text() for i in range(self.load_source.source_list.count())]
         target_selected_items = [self.target_source.source_list.item(i).text() for i in range(self.target_source.source_list.count())]
         selected_radio = "New Mesh" if self.new_mesh_radio.isChecked() else "Target Mesh"
@@ -265,11 +358,21 @@ class SkinClusterManager(QtWidgets.QDialog):
             print("No skin clusters to rebuild.")
 
     def apply_stylesheet(self):
+        """
+        Apply the stylesheet to the UI.
+        """
         stylesheet = self.load_stylesheet_from_json(self.json_path)
         if stylesheet:
             self.setStyleSheet(stylesheet)
 
     def load_stylesheet_from_json(self, json_path):
+        """
+        Load the stylesheet from a JSON file.   
+        Args:
+            json_path (str): The path to the JSON file containing the stylesheet.
+        Returns:
+            str: The loaded stylesheet as a string.
+        """
         if not os.path.exists(json_path):
             print(f"Stylesheet not found: {json_path}")
             return None
